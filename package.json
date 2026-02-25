@@ -1,12 +1,12 @@
 {
-  name xyther-dashboard,
-  version 1.0.0,
-  description Dashboard para Xyther Bot,
-  scripts {
-    dev vercel dev,
-    deploy vercel --prod
+  "name": "xyther-frontend",
+  "version": "1.0.0",
+  "description": "Dashboard para Xyther Bot",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
   },
-  devDependencies {
-    vercel ^32.0.0
+  "devDependencies": {
+    "vercel": "^32.0.0"
   }
 }
