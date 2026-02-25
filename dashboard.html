@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Xyther Bot</title>
+    
+    <!-- Configuración -->
+    <script src="/config.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #111111;
+            border-right: 1px solid #3a2c0f;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #3a2c0f;
+            text-align: center;
+        }
+
+        .premium-box {
+            background: linear-gradient(135deg, #2a1f0a, #1a1305);
+            border: 1px solid #d4af37;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .premium-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .premium-box h3 {
+            color: #d4af37;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .premium-box p {
+            color: #b8860b;
+            font-size: 0.85rem;
+        }
+
+        .nav-menu {
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.9rem 1rem;
+            margin: 0.3rem 0;
+            border-radius: 10px;
+            color: #bbb;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item i {
+            color: #d4af37;
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        .nav-item:hover {
+            background: #1f1a0e;
+            border-color: #d4af37;
+            color: #d4af37;
+            transform: translateX(5px);
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #2a2a2a;
+            padding-top: 1rem;
+            font-size: 0.8rem;
+            color: #555;
+            text-align: center;
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f0f0f;
+        }
+
+        .top-bar {
+            background: #111111;
+            padding: 0.8rem 2rem;
+            border-bottom: 1px solid #3a2c0f;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .profile-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .discord-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1f1a0e;
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: 1px solid #d4af37;
+            transition: 0.3s;
+            color: #d4af37;
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .discord-link:hover {
+            background: #d4af37;
+            color: #111;
+            transform: translateY(-2px);
+        }
+
+        .profile-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            object-fit: cover;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: #1a1a1a;
+            border: 1px solid #3a2c0f;
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .profile-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .dropdown-user {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-tag {
+            color: #777;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1rem;
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #2a2a2a;
+            color: #d4af37;
+        }
+
+        .dropdown-item i {
+            color: #d4af37;
+            width: 20px;
+        }
+
+        /* Dashboard content */
+        .dashboard-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .welcome-box {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            border: 1px solid #3a2c0f;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .welcome-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-box p {
+            color: #999;
+            font-size: 1rem;
+        }
+
+        .servers-section {
+            background: #111111;
+            border: 1px solid #3a2c0f;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #d4af37;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.2rem;
+        }
+
+        /* Tarjetas de servidores */
+        .server-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .server-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.15);
+        }
+
+        .server-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 2px solid #3a2c0f;
+            background: #2a2a2a;
+        }
+
+        .server-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .server-name {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .server-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #252525;
+            padding: 0.25rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            color: #ccc;
+            border: 1px solid #333;
+        }
+
+        .stat-badge i {
+            color: #d4af37;
+            font-size: 0.7rem;
+        }
+
+        .bot-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(67, 181, 129, 0.1);
+            color: #43b581;
+            padding: 0.25rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            border: 1px solid #43b581;
+        }
+
+        .bot-status i {
+            font-size: 0.7rem;
+        }
+
+        .card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .config-btn {
+            background: #d4af37;
+            color: #0a0a0a;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            min-width: 100px;
+        }
+
+        .config-btn:hover {
+            background: #c4a032;
+            transform: scale(1.02);
+        }
+
+        .invite-btn {
+            background: transparent;
+            color: #5865F2;
+            border: 1px solid #5865F2;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            min-width: 100px;
+        }
+
+        .invite-btn:hover {
+            background: #5865F2;
+            color: white;
+        }
+
+        .empty-servers {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-servers i {
+            font-size: 3rem;
+            color: #3a2c0f;
+            margin-bottom: 1rem;
+        }
+
+        .invite-link {
+            color: #d4af37;
+            text-decoration: none;
+            border-bottom: 1px dashed #d4af37;
+        }
+
+        /* Toast notification */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(212, 175, 55, 0.95);
+            backdrop-filter: blur(10px);
+            color: #0a0a0a;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.3);
+            animation: slideUp 0.3s ease forwards;
+            pointer-events: auto;
+            min-width: 300px;
+            justify-content: center;
+            border: 1px solid #d4af37;
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .toast.hide {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a2c0f;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 1rem 0.5rem;
+            }
+
+            .sidebar h1 {
+                font-size: 1.2rem;
+            }
+
+            .premium-box {
+                display: none;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .server-card {
+                flex-wrap: wrap;
+            }
+
+            .card-actions {
+                width: 100%;
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+
+            .toast {
+                min-width: 250px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>Xyther Bot</h1>
+        
+        <div class="premium-box" id="premiumBtn">
+            <h3>✨ Try Premium</h3>
+            <p>Desbloquea características</p>
+        </div>
+        
+        <div class="nav-menu">
+            <a href="/" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="#" class="nav-item" id="auditLogBtn">
+                <i class="fas fa-history"></i>
+                <span>Audit Log</span>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="https://docs.xytherbot.com" target="_blank" class="nav-item">
+                <i class="fas fa-book"></i>
+                <span>Xyther Bot Docs</span>
+                <span class="arrow">↗</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            v1.0.0
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="top-bar">
+            <div class="profile-container">
+                <a href="https://discord.gg/cpjjVFEZ" target="_blank" class="discord-link" title="Servidor de Discord">
+                    <i class="fab fa-discord"></i>
+                </a>
+                
+                <div class="profile-dropdown">
+                    <img class="profile-pic" id="profilePic" src="" alt="perfil">
+                    
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user" id="dropdownName"></div>
+                            <div class="dropdown-tag" id="dropdownTag"></div>
+                        </div>
+                        
+                        <a href="/logout" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="welcome-box">
+                <h2>¡Bienvenido de vuelta, <span id="welcomeName">usuario</span>!</h2>
+                <p>Muchas gracias por preferir la proteccion de Xyther Bot.</p>
+            </div>
+
+            <div class="servers-section">
+                <div class="section-title">
+                    <i class="fas fa-crown" style="color: #d4af37;"></i>
+                    <span>Tus servidores</span>
+                </div>
+                
+                <div class="servers-grid" id="serversGrid">
+                    <div class="empty-servers">
+                        <i class="fas fa-spinner fa-pulse"></i>
+                        <p>Cargando servidores...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        (function() {
+            const CLIENT_ID = '1475703157869772972';
+            
+            // Función para mostrar toast
+            function showToast(message, type = 'info', duration = 3000) {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast`;
+                
+                let icon = 'fa-info-circle';
+                
+                toast.innerHTML = `
+                    <i class="fas ${icon}"></i>
+                    <span>${message}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('hide');
+                    setTimeout(() => {
+                        container.removeChild(toast);
+                    }, 300);
+                }, duration);
+            }
+            
+            fetch(`${CONFIG.API_URL}/api/user`, { credentials: 'include' })
+                .then(response => {
+                    if (!response.ok) {
+                        window.location.href = '/';
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    if (!user) return;
+                    
+                    let avatarUrl;
+                    if (user.avatar) {
+                        avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}?size=128`;
+                    } else {
+                        const defaultAvatarNum = parseInt(user.discriminator) % 5;
+                        avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNum}.png`;
+                    }
+                    
+                    document.getElementById('profilePic').src = avatarUrl;
+                    document.getElementById('welcomeName').textContent = user.global_name || user.username;
+                    document.getElementById('dropdownName').textContent = user.global_name || user.username;
+                    document.getElementById('dropdownTag').textContent = `@${user.username}`;
+                    
+                    loadUserGuilds();
+                })
+                .catch(() => {
+                    window.location.href = '/';
+                });
+            
+            function loadUserGuilds() {
+                fetch(`${CONFIG.API_URL}/api/user/guilds`, { credentials: 'include' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error cargando servidores');
+                        }
+                        return response.json();
+                    })
+                    .then(guilds => {
+                        const serversGrid = document.getElementById('serversGrid');
+                        
+                        if (!guilds || guilds.length === 0) {
+                            serversGrid.innerHTML = `
+                                <div class="empty-servers">
+                                    <i class="fas fa-robot"></i>
+                                    <p>No tienes servidores donde seas owner</p>
+                                    <p style="font-size:0.9rem; margin-top:0.5rem;">
+                                        <a href="https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot" 
+                                           target="_blank" 
+                                           class="invite-link">
+                                            Invita el bot a tu servidor
+                                        </a>
+                                    </p>
+                                </div>
+                            `;
+                            return;
+                        }
+                        
+                        // Separar servidores donde el bot está y donde no
+                        const serversWithBot = guilds.filter(g => g.botInServer === true);
+                        const serversWithoutBot = guilds.filter(g => g.botInServer === false);
+                        
+                        // Ordenar alfabéticamente cada grupo
+                        serversWithBot.sort((a, b) => a.name.localeCompare(b.name));
+                        serversWithoutBot.sort((a, b) => a.name.localeCompare(b.name));
+                        
+                        // Unir los arrays: primero los que tienen bot, luego los que no
+                        const sortedGuilds = [...serversWithBot, ...serversWithoutBot];
+                        
+                        serversGrid.innerHTML = sortedGuilds.map(guild => {
+                            let iconUrl = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                            if (guild.icon) {
+                                iconUrl = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=64`;
+                            }
+                            
+                            const botInServer = guild.botInServer || false;
+                            
+                            if (botInServer) {
+                                return `
+                                    <div class="server-card">
+                                        <img class="server-icon" src="${iconUrl}" alt="${guild.name}" 
+                                             onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                                        <div class="server-info">
+                                            <div class="server-name">${guild.name}</div>
+                                            <div class="server-stats">
+                                                <span class="stat-badge"><i class="fas fa-users"></i> ${guild.approximate_member_count || '0'}</span>
+                                                <span class="bot-status"><i class="fas fa-check-circle"></i> Bot activo</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-actions">
+                                            <a href="/dashboard/server/${guild.id}" class="config-btn">
+                                                <i class="fas fa-cog"></i> Configurar
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                return `
+                                    <div class="server-card">
+                                        <img class="server-icon" src="${iconUrl}" alt="${guild.name}" 
+                                             onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                                        <div class="server-info">
+                                            <div class="server-name">${guild.name}</div>
+                                            <div class="server-stats">
+                                                <span class="stat-badge"><i class="fas fa-users"></i> ${guild.approximate_member_count || '0'}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-actions">
+                                            <a href="https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&permissions=8&scope=bot&guild_id=${guild.id}" 
+                                               target="_blank"
+                                               class="invite-btn">
+                                                <i class="fas fa-plus"></i> Invitar Bot
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }).join('');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('serversGrid').innerHTML = `
+                            <div class="empty-servers">
+                                <i class="fas fa-exclamation-triangle" style="color: #d4af37;"></i>
+                                <p>Error al cargar los servidores</p>
+                            </div>
+                        `;
+                    });
+            }
+            
+            document.getElementById('premiumBtn').addEventListener('click', () => {
+                showToast('Próximamente - Premium estará disponible pronto ✨', 'info');
+            });
+            
+            document.getElementById('auditLogBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = '/audit-log';
+            });
+        })();
+    </script>
+</body>
+</html>

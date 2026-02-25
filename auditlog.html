@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Log - Xyther Bot</title>
+    
+    <!-- Configuración -->
+    <script src="/config.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #111111;
+            border-right: 1px solid #3a2c0f;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #3a2c0f;
+            text-align: center;
+        }
+
+        .nav-menu {
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.9rem 1rem;
+            margin: 0.3rem 0;
+            border-radius: 10px;
+            color: #bbb;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item i {
+            color: #d4af37;
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        .nav-item:hover {
+            background: #1f1a0e;
+            border-color: #d4af37;
+            color: #d4af37;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #1f1a0e;
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #2a2a2a;
+            padding-top: 1rem;
+            font-size: 0.8rem;
+            color: #555;
+            text-align: center;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f0f0f;
+        }
+
+        .top-bar {
+            background: #111111;
+            padding: 0.8rem 2rem;
+            border-bottom: 1px solid #3a2c0f;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .profile-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .discord-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1f1a0e;
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: 1px solid #d4af37;
+            transition: 0.3s;
+            color: #d4af37;
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .discord-link:hover {
+            background: #d4af37;
+            color: #111;
+            transform: translateY(-2px);
+        }
+
+        .profile-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: #1a1a1a;
+            border: 1px solid #3a2c0f;
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .profile-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .dropdown-user {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-tag {
+            color: #777;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1rem;
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #2a2a2a;
+            color: #d4af37;
+        }
+
+        .audit-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .audit-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            border: 1px solid #3a2c0f;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .audit-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+        }
+
+        .audit-header p {
+            color: #999;
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            color: #d4af37;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .filters-section {
+            background: #111111;
+            border: 1px solid #3a2c0f;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            color: #d4af37;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 30px;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:hover, .filter-input:hover {
+            border-color: #d4af37;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+
+        .filter-btn {
+            background: #d4af37;
+            color: #0a0a0a;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            min-width: 120px;
+        }
+
+        .filter-btn:hover {
+            background: #c4a032;
+            transform: translateY(-2px);
+        }
+
+        .clear-btn {
+            background: transparent;
+            color: #999;
+            border: 1px solid #2a2a2a;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .clear-btn:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .logs-table {
+            background: #111111;
+            border: 1px solid #3a2c0f;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 180px 1fr 150px 120px 50px;
+            background: #1a1a1a;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #3a2c0f;
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        .log-row {
+            display: grid;
+            grid-template-columns: 180px 1fr 150px 120px 50px;
+            padding: 0.8rem 1.5rem;
+            border-bottom: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .log-row:hover {
+            background: #1f1a0e;
+        }
+
+        .log-row:last-child {
+            border-bottom: none;
+        }
+
+        .log-date {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .log-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+        }
+
+        .log-user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-username {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .log-userid {
+            color: #777;
+            font-size: 0.75rem;
+        }
+
+        .log-ip {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+
+        .log-action {
+            padding: 0.25rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .action-login {
+            background: rgba(67, 181, 129, 0.1);
+            color: #43b581;
+            border: 1px solid #43b581;
+        }
+
+        .action-logout {
+            background: rgba(242, 63, 67, 0.1);
+            color: #f23f43;
+            border: 1px solid #f23f43;
+        }
+
+        .action-config {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+        }
+
+        .action-view {
+            background: rgba(100, 100, 100, 0.1);
+            color: #999;
+            border: 1px solid #666;
+        }
+
+        .log-details {
+            cursor: pointer;
+            color: #d4af37;
+            text-align: center;
+        }
+
+        .log-details:hover {
+            transform: scale(1.2);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            color: #e0e0e0;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .page-btn.active {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: #0a0a0a;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #3a2c0f;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            color: #d4af37;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            color: #999;
+            font-size: 1.5rem;
+        }
+
+        .modal-close:hover {
+            color: #d4af37;
+        }
+
+        .modal-detail {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .modal-detail:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #d4af37;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-value {
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(212, 175, 55, 0.95);
+            backdrop-filter: blur(10px);
+            color: #0a0a0a;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease forwards;
+            pointer-events: auto;
+            min-width: 300px;
+            justify-content: center;
+            border: 1px solid #d4af37;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .toast.hide {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a2c0f;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 1rem 0.5rem;
+            }
+
+            .sidebar h1 {
+                font-size: 1.2rem;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .table-header, .log-row {
+                grid-template-columns: 100px 1fr 90px 70px 30px;
+                font-size: 0.75rem;
+                padding: 0.5rem;
+                gap: 5px;
+            }
+
+            .log-user-info {
+                display: none;
+            }
+
+            .log-user-avatar {
+                width: 24px;
+                height: 24px;
+            }
+
+            .filters-section {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .toast {
+                min-width: 250px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>Xyther Bot</h1>
+        
+        <div class="nav-menu">
+            <a href="/dashboard" class="nav-item">
+                <i class="fas fa-server"></i>
+                <span>Servidores</span>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="#" class="nav-item active">
+                <i class="fas fa-history"></i>
+                <span>Audit Log</span>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="https://docs.xytherbot.com" target="_blank" class="nav-item">
+                <i class="fas fa-book"></i>
+                <span>Xyther Bot Docs</span>
+                <span class="arrow">↗</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            v1.0.0
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="top-bar">
+            <div class="profile-container">
+                <a href="https://discord.gg/cpjjVFEZ" target="_blank" class="discord-link">
+                    <i class="fab fa-discord"></i>
+                </a>
+                
+                <div class="profile-dropdown">
+                    <img class="profile-pic" id="profilePic" src="" alt="perfil">
+                    
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user" id="dropdownName"></div>
+                            <div class="dropdown-tag" id="dropdownTag"></div>
+                        </div>
+                        
+                        <a href="/logout" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="audit-content">
+            <div class="audit-header">
+                <h2>📋 Audit Log</h2>
+                <p>Registro de accesos y actividades de los usuarios en el panel</p>
+            </div>
+
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalLogs">0</div>
+                    <div class="stat-label">Total registros</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="todayLogs">0</div>
+                    <div class="stat-label">Hoy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="weekLogs">0</div>
+                    <div class="stat-label">Esta semana</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="monthLogs">0</div>
+                    <div class="stat-label">Este mes</div>
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label class="filter-label">Acción</label>
+                    <select class="filter-select" id="actionFilter">
+                        <option value="all">Todas las acciones</option>
+                        <option value="login">Inicio sesión</option>
+                        <option value="logout">Cierre sesión</option>
+                        <option value="config">Cambio configuración</option>
+                        <option value="view">Vista de página</option>
+                        <option value="other">Otras</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Usuario</label>
+                    <select class="filter-select" id="userFilter">
+                        <option value="all">Todos los usuarios</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Búsqueda</label>
+                    <input type="text" class="filter-input" id="searchFilter" placeholder="Nombre, ID o detalle...">
+                </div>
+                <button class="filter-btn" id="applyFilters">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+                <button class="clear-btn" id="clearFilters">
+                    <i class="fas fa-times"></i> Limpiar
+                </button>
+            </div>
+
+            <div class="logs-table">
+                <div class="table-header">
+                    <span>FECHA</span>
+                    <span>USUARIO</span>
+                    <span>IP</span>
+                    <span>ACCIÓN</span>
+                    <span></span>
+                </div>
+                <div id="logsContainer">
+                    <div style="text-align: center; padding: 3rem; color: #666;">
+                        <i class="fas fa-spinner fa-pulse" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Cargando logs...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <!-- Modal para detalles -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Detalles del registro</h3>
+                <span class="modal-close" id="closeModal">&times;</span>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        (function() {
+            // Variables globales
+            let currentPage = 1;
+            const limit = 50;
+            let totalPages = 1;
+            let currentFilters = {
+                action: 'all',
+                userId: 'all',
+                search: ''
+            };
+            
+            // Función para mostrar toast
+            function showToast(message, type = 'info', duration = 3000) {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                
+                toast.innerHTML = `
+                    <i class="fas fa-info-circle"></i>
+                    <span>${message}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('hide');
+                    setTimeout(() => {
+                        container.removeChild(toast);
+                    }, 300);
+                }, duration);
+            }
+
+            // Función para censurar IP
+            function censorIP(ip) {
+                if (!ip) return '0.0.0.XXX';
+                if (ip === 'localhost' || ip === '127.0.0.1') return 'localhost';
+                if (ip.includes('.')) {
+                    const parts = ip.split('.');
+                    if (parts.length === 4) {
+                        return `${parts[0]}.${parts[1]}.${parts[2]}.XXX`;
+                    }
+                }
+                if (ip.includes(':')) {
+                    return ip.substring(0, ip.lastIndexOf(':')) + ':XXX';
+                }
+                return ip;
+            }
+
+            // Función para formatear fecha
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+            }
+
+            // Función para obtener texto de acción
+            function getActionText(action) {
+                const actions = {
+                    'login': 'Inicio sesión',
+                    'logout': 'Cierre sesión',
+                    'config': 'Configuración',
+                    'view': 'Vista',
+                    'other': 'Otro'
+                };
+                return actions[action] || action;
+            }
+
+            // Función para obtener clase de acción
+            function getActionClass(action) {
+                const classes = {
+                    'login': 'action-login',
+                    'logout': 'action-logout',
+                    'config': 'action-config',
+                    'view': 'action-view',
+                    'other': 'action-view'
+                };
+                return classes[action] || 'action-view';
+            }
+
+            // Cargar datos del usuario
+            fetch(`${CONFIG.API_URL}/api/user`, {
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        window.location.href = '/';
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    if (!user) return;
+                    
+                    let avatarUrl;
+                    if (user.avatar) {
+                        avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}?size=128`;
+                    } else {
+                        const defaultAvatarNum = parseInt(user.discriminator) % 5;
+                        avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNum}.png`;
+                    }
+                    
+                    document.getElementById('profilePic').src = avatarUrl;
+                    document.getElementById('dropdownName').textContent = user.global_name || user.username;
+                    document.getElementById('dropdownTag').textContent = `@${user.username}`;
+                    
+                    // Cargar logs y estadísticas
+                    loadStats();
+                    loadLogs();
+                })
+                .catch(() => {
+                    window.location.href = '/';
+                });
+
+            // Cargar estadísticas
+            function loadStats() {
+                fetch(`${CONFIG.API_URL}/api/audit-logs/stats`, { credentials: 'include' })
+                    .then(response => response.json())
+                    .then(stats => {
+                        document.getElementById('totalLogs').textContent = stats.total;
+                        document.getElementById('todayLogs').textContent = stats.today;
+                        document.getElementById('weekLogs').textContent = stats.week;
+                        document.getElementById('monthLogs').textContent = stats.month;
+                    })
+                    .catch(error => {
+                        console.error('Error cargando estadísticas:', error);
+                    });
+            }
+
+            // Cargar logs
+            function loadLogs() {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: limit,
+                    action: currentFilters.action,
+                    userId: currentFilters.userId,
+                    search: currentFilters.search
+                });
+                
+                fetch(`${CONFIG.API_URL}/api/audit-logs?${params}`, { credentials: 'include' })
+                    .then(response => response.json())
+                    .then(data => {
+                        renderLogs(data.logs);
+                        totalPages = data.totalPages;
+                        renderPagination();
+                        
+                        // Cargar usuarios para el filtro (solo una vez)
+                        if (document.getElementById('userFilter').options.length === 1) {
+                            loadUsers();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error cargando logs:', error);
+                        document.getElementById('logsContainer').innerHTML = `
+                            <div style="text-align: center; padding: 3rem; color: #f23f43;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                                <p>Error al cargar los logs</p>
+                            </div>
+                        `;
+                    });
+            }
+
+            // Cargar usuarios para el filtro
+            function loadUsers() {
+                // Extraer usuarios únicos de los logs
+                fetch('/api/audit-logs?limit=1000')
+                    .then(response => response.json())
+                    .then(data => {
+                        const users = new Map();
+                        data.logs.forEach(log => {
+                            if (!users.has(log.user.id)) {
+                                users.set(log.user.id, log.user);
+                            }
+                        });
+                        
+                        const userFilter = document.getElementById('userFilter');
+                        Array.from(users.values()).forEach(user => {
+                            const option = document.createElement('option');
+                            option.value = user.id;
+                            option.textContent = `${user.name} (${user.username})`;
+                            userFilter.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error cargando usuarios:', error);
+                    });
+            }
+
+            // Renderizar logs
+            function renderLogs(logs) {
+                const container = document.getElementById('logsContainer');
+                
+                if (logs.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: #666;">
+                            <i class="fas fa-history" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>No hay registros para mostrar</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = logs.map(log => {
+                    let avatarUrl = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                    if (log.user.avatar) {
+                        avatarUrl = `https://cdn.discordapp.com/avatars/${log.user.id}/${log.user.avatar}.png?size=32`;
+                    }
+                    
+                    return `
+                        <div class="log-row">
+                            <div class="log-date">${formatDate(log.date)}</div>
+                            <div class="log-user">
+                                <img class="log-user-avatar" src="${avatarUrl}" alt="" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+                                <div class="log-user-info">
+                                    <span class="log-username">${log.user.name}</span>
+                                    <span class="log-userid">${log.user.id}</span>
+                                </div>
+                            </div>
+                            <div class="log-ip">${censorIP(log.ip)}</div>
+                            <div><span class="log-action ${getActionClass(log.action)}">${getActionText(log.action)}</span></div>
+                            <div class="log-details" onclick="showDetails(${log.id})">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Renderizar paginación
+            function renderPagination() {
+                const pagination = document.getElementById('pagination');
+                
+                if (totalPages <= 1) {
+                    pagination.innerHTML = '';
+                    return;
+                }
+                
+                let html = '';
+                
+                // Botón anterior
+                html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
+                
+                // Páginas
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                    } else if (i === currentPage - 3 || i === currentPage + 3) {
+                        html += `<button class="page-btn" disabled>...</button>`;
+                    }
+                }
+                
+                // Botón siguiente
+                html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
+                
+                pagination.innerHTML = html;
+            }
+
+            // Cambiar página
+            window.changePage = function(page) {
+                currentPage = page;
+                loadLogs();
+            };
+
+            // Mostrar detalles
+            window.showDetails = function(logId) {
+                fetch(`${CONFIG.API_URL}/api/audit-logs/${logId}`, { credentials: 'include' })
+                    .then(response => response.json())
+                    .then(log => {
+                        const modal = document.getElementById('detailModal');
+                        const content = document.getElementById('modalContent');
+                        
+                        content.innerHTML = `
+                            <div class="modal-detail">
+                                <div class="detail-label">ID</div>
+                                <div class="detail-value">${log.id}</div>
+                            </div>
+                            <div class="modal-detail">
+                                <div class="detail-label">Fecha</div>
+                                <div class="detail-value">${formatDate(log.date)}</div>
+                            </div>
+                            <div class="modal-detail">
+                                <div class="detail-label">Usuario</div>
+                                <div class="detail-value">${log.user.name} (${log.user.username})</div>
+                            </div>
+                            <div class="modal-detail">
+                                <div class="detail-label">ID de Usuario</div>
+                                <div class="detail-value">${log.user.id}</div>
+                            </div>
+                            <div class="modal-detail">
+                                <div class="detail-label">IP</div>
+                                <div class="detail-value">${log.ip}</div>
+                            </div>
+                            <div class="modal-detail">
+                                <div class="detail-label">Acción</div>
+                                <div class="detail-value">${getActionText(log.action)}</div>
+                            </div>
+                            <div class="modal-detail">
+                                <div class="detail-label">Ruta</div>
+                                <div class="detail-value">${log.method} ${log.path}</div>
+                            </div>
+                            ${log.details ? `
+                                <div class="modal-detail">
+                                    <div class="detail-label">Detalles</div>
+                                    <div class="detail-value">${log.details}</div>
+                                </div>
+                            ` : ''}
+                            <div class="modal-detail">
+                                <div class="detail-label">User Agent</div>
+                                <div class="detail-value">${log.userAgent || 'Desconocido'}</div>
+                            </div>
+                        `;
+                        
+                        modal.classList.add('active');
+                    })
+                    .catch(error => {
+                        console.error('Error cargando detalles:', error);
+                        showToast('Error al cargar los detalles', 'error');
+                    });
+            };
+
+            // Eventos de filtros
+            document.getElementById('applyFilters').addEventListener('click', () => {
+                currentFilters = {
+                    action: document.getElementById('actionFilter').value,
+                    userId: document.getElementById('userFilter').value,
+                    search: document.getElementById('searchFilter').value
+                };
+                currentPage = 1;
+                loadLogs();
+                showToast('Filtros aplicados');
+            });
+
+            document.getElementById('clearFilters').addEventListener('click', () => {
+                document.getElementById('actionFilter').value = 'all';
+                document.getElementById('userFilter').value = 'all';
+                document.getElementById('searchFilter').value = '';
+                currentFilters = {
+                    action: 'all',
+                    userId: 'all',
+                    search: ''
+                };
+                currentPage = 1;
+                loadLogs();
+                showToast('Filtros limpiados');
+            });
+
+            // Cerrar modal
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('detailModal').classList.remove('active');
+            });
+
+            // Cerrar modal con click fuera
+            document.getElementById('detailModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('detailModal')) {
+                    document.getElementById('detailModal').classList.remove('active');
+                }
+            });
+
+            // Cerrar modal con ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.getElementById('detailModal').classList.remove('active');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

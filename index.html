@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xyther Bot - Inicio</title>
+    
+    <!-- Configuración -->
+    <script src="/config.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, #1a1a1a, #0a0a0a);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3a2c0f;
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+            background: transparent;
+            font-size: 1rem;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+        }
+
+        .nav-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .login-btn {
+            background: #d4af37;
+            color: #0a0a0a;
+            font-weight: 600;
+            padding: 0.6rem 2rem;
+            border-radius: 30px;
+            border: 1px solid #d4af37;
+        }
+
+        .login-btn:hover {
+            background: #c4a032;
+            border-color: #c4a032;
+            color: #0a0a0a;
+        }
+
+        .login-btn i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .dashboard-btn {
+            background: #d4af37;
+            color: #0a0a0a;
+            font-weight: 600;
+            padding: 0.6rem 2rem;
+            border-radius: 30px;
+            border: 1px solid #d4af37;
+        }
+
+        .dashboard-btn:hover {
+            background: #c4a032;
+            border-color: #c4a032;
+            transform: translateY(-2px);
+        }
+
+        .dashboard-btn i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .hero {
+            max-width: 800px;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .hero h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            letter-spacing: 4px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .youtube-section {
+            margin-top: 2rem;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.1s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .youtube-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #ff0000;
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3);
+            border: none;
+        }
+
+        .youtube-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+            background: #ff1a1a;
+        }
+
+        .youtube-link i {
+            font-size: 1.8rem;
+        }
+
+        .features {
+            display: flex;
+            gap: 2rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .feature-card {
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid #3a2c0f;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #d4af37;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .feature-emoji {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+        }
+
+        .feature-card h3 {
+            color: #d4af37;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #999;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #3a2c0f;
+            color: #555;
+            background: rgba(17, 17, 17, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .footer i {
+            color: #d4af37;
+            margin: 0 2px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .logo h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+
+            .features {
+                gap: 1rem;
+            }
+
+            .feature-card {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>Xyther Bot</h1>
+        </div>
+        <div class="nav-links">
+            <a href="https://docs.xytherbot.com" target="_blank" class="nav-item" title="Documentación">
+                <i class="fas fa-question-circle"></i>
+            </a>
+            
+            <a href="https://discord.gg/cpjjVFEZ" target="_blank" class="nav-item" title="Servidor de Discord">
+                <i class="fab fa-discord"></i>
+            </a>
+            
+            <button class="nav-item login-btn" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            
+            <button class="nav-item dashboard-btn hidden" id="dashboardBtn">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="hero">
+            <h2>¿QUÉ SOMOS?</h2>
+            <p>El sistema de protección más avanzado para tu servidor de Discord. Detectamos y bloqueamos raids, spammers y cuentas maliciosas en tiempo real. Tu comunidad, siempre segura.</p>
+        </div>
+
+        <div class="youtube-section">
+            <a href="https://youtube.com/@XytherBot" target="_blank" class="youtube-link">
+                <i class="fab fa-youtube"></i>
+                Tutoriales
+            </a>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-emoji">🛡️</div>
+                <h3>Anti-Raid</h3>
+                <p>Bloquea ataques masivos en tiempo real.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-emoji">⚡</div>
+                <h3>Respuesta Rápida</h3>
+                <p>Actúa en milisegundos.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-emoji">🤖</div>
+                <h3>Auto-Moderación</h3>
+                <p>Sistema inteligente que aprende y protege.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Xyther Bot. Todos los derechos reservados. | Hecho con <i class="fas fa-heart"></i> para la comunidad</p>
+    </footer>
+
+    <script>
+        (function() {
+            const loginBtn = document.getElementById('loginBtn');
+            const dashboardBtn = document.getElementById('dashboardBtn');
+            
+            fetch(`${CONFIG.API_URL}/api/user`, {
+                method: 'HEAD',  // HEAD es más ligero, solo pide headers
+                credentials: 'include',
+                cache: 'no-store'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Usuario logueado
+                    loginBtn.classList.add('hidden');
+                    dashboardBtn.classList.remove('hidden');
+                } else {
+                    // Usuario no logueado
+                    loginBtn.classList.remove('hidden');
+                    dashboardBtn.classList.add('hidden');
+                }
+            })
+            .catch(() => {
+                // Error, asumimos no logueado
+                loginBtn.classList.remove('hidden');
+                dashboardBtn.classList.add('hidden');
+            });
+            
+            // Evento del botón Login
+            loginBtn.addEventListener('click', function() {
+                window.location.href = '/auth/discord';
+            });
+            
+            // Evento del botón Dashboard
+            dashboardBtn.addEventListener('click', function() {
+                window.location.href = '/dashboard';
+            });
+        })();
+    </script>
+</body>
+</html>

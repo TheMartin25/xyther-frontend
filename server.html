@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Xyther Bot</title>
+      
+    <!-- Configuración -->
+    <script src="/config.js"></script>
+  
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #111111;
+            border-right: 1px solid #3a2c0f;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h1 {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 2.2rem;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #3a2c0f;
+            text-align: center;
+        }
+
+        .server-info-sidebar {
+            background: #1a1a1a;
+            border: 1px solid #3a2c0f;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .server-icon-sidebar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid #d4af37;
+        }
+
+        .server-name-sidebar {
+            font-weight: 600;
+            color: #d4af37;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-menu {
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.9rem 1rem;
+            margin: 0.3rem 0;
+            border-radius: 10px;
+            color: #bbb;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item i {
+            color: #d4af37;
+            width: 24px;
+            font-size: 1.2rem;
+        }
+
+        .nav-item:hover {
+            background: #1f1a0e;
+            border-color: #d4af37;
+            color: #d4af37;
+            transform: translateX(5px);
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid #2a2a2a;
+            padding-top: 1rem;
+            font-size: 0.8rem;
+            color: #555;
+            text-align: center;
+        }
+
+        /* Main content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f0f0f;
+        }
+
+        .top-bar {
+            background: #111111;
+            padding: 0.8rem 2rem;
+            border-bottom: 1px solid #3a2c0f;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .profile-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .discord-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1f1a0e;
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: 1px solid #d4af37;
+            transition: 0.3s;
+            color: #d4af37;
+            text-decoration: none;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .discord-link:hover {
+            background: #d4af37;
+            color: #111;
+            transform: translateY(-2px);
+        }
+
+        .profile-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: #1a1a1a;
+            border: 1px solid #3a2c0f;
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .profile-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 1rem;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .dropdown-user {
+            color: #d4af37;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .dropdown-tag {
+            color: #777;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.8rem 1rem;
+            color: #e0e0e0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #2a2a2a;
+            color: #d4af37;
+        }
+
+        .dropdown-item i {
+            color: #d4af37;
+            width: 20px;
+        }
+
+        /* Dashboard content */
+        .dashboard-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .server-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            border: 1px solid #3a2c0f;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .server-header-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 3px solid #d4af37;
+        }
+
+        .server-header-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+        }
+
+        .server-header-info p {
+            color: #999;
+            font-size: 1rem;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .module-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card:hover {
+            border-color: #d4af37;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.15);
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
+        }
+
+        .module-icon {
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+
+        .module-name {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-desc {
+            color: #999;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .module-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #252525;
+            padding: 0.25rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            border: 1px solid #333;
+        }
+
+        .status-badge.enabled {
+            background: rgba(67, 181, 129, 0.1);
+            color: #43b581;
+            border-color: #43b581;
+        }
+
+        .status-badge.disabled {
+            background: rgba(242, 63, 67, 0.1);
+            color: #f23f43;
+            border-color: #f23f43;
+        }
+
+        .config-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            padding: 0.25rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            border: 1px solid #d4af37;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: #f23f43;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 80px;
+                padding: 1rem 0.5rem;
+            }
+
+            .sidebar h1 {
+                font-size: 1.2rem;
+            }
+
+            .server-info-sidebar {
+                display: none;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .server-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>Xyther Bot</h1>
+        
+        <div class="server-info-sidebar" id="serverInfoSidebar">
+            <img class="server-icon-sidebar" id="sidebarServerIcon" src="" alt="">
+            <div class="server-name-sidebar" id="sidebarServerName">Cargando...</div>
+        </div>
+        
+        <div class="nav-menu">
+            <a href="/dashboard" class="nav-item" id="serversBtn">
+                <i class="fas fa-server"></i>
+                <span>Servidores</span>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="#" class="nav-item" id="auditLogBtn">
+                <i class="fas fa-history"></i>
+                <span>Audit Log</span>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="https://docs.xytherbot.com" target="_blank" class="nav-item">
+                <i class="fas fa-book"></i>
+                <span>Xyther Bot Docs</span>
+                <span class="arrow">↗</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            v1.0.0
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="top-bar">
+            <div class="profile-container">
+                <a href="https://discord.gg/cpjjVFEZ" target="_blank" class="discord-link">
+                    <i class="fab fa-discord"></i>
+                </a>
+                
+                <div class="profile-dropdown">
+                    <img class="profile-pic" id="profilePic" src="" alt="perfil">
+                    
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user" id="dropdownName"></div>
+                            <div class="dropdown-tag" id="dropdownTag"></div>
+                        </div>
+                        
+                        <a href="/logout" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Cerrar sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="server-header" id="serverHeader">
+                <img class="server-header-icon" id="serverIcon" src="" alt="">
+                <div class="server-header-info">
+                    <h2 id="serverName">Cargando servidor...</h2>
+                    <p id="serverStats">Cargando información...</p>
+                </div>
+            </div>
+
+            <div class="modules-grid" id="modulesGrid">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-pulse"></i>
+                    <p>Cargando módulos...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Obtener ID del servidor de la URL
+            const pathParts = window.location.pathname.split('/');
+            const serverId = pathParts[pathParts.length - 1];
+            
+            // Cargar datos del usuario
+            fetch(`${CONFIG.API_URL}/api/user`, {
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        window.location.href = '/';
+                        return null;
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    if (!user) return;
+                    
+                    // Avatar
+                    let avatarUrl;
+                    if (user.avatar) {
+                        avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${user.avatar.startsWith('a_') ? 'gif' : 'png'}?size=128`;
+                    } else {
+                        const defaultAvatarNum = parseInt(user.discriminator) % 5;
+                        avatarUrl = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNum}.png`;
+                    }
+                    
+                    document.getElementById('profilePic').src = avatarUrl;
+                    document.getElementById('dropdownName').textContent = user.global_name || user.username;
+                    document.getElementById('dropdownTag').textContent = `@${user.username}`;
+                    
+                    // Cargar info del servidor
+                    loadServerInfo(serverId);
+                })
+                .catch(() => {
+                    window.location.href = '/';
+                });
+            
+            function loadServerInfo(serverId) {
+                fetch(`${CONFIG.API_URL}/api/guilds/${serverId}`, { credentials: 'include' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error cargando servidor');
+                        return response.json();
+                    })
+                    .then(guild => {
+                        // Construir URL del icono
+                        let iconUrl = 'https://cdn.discordapp.com/embed/avatars/0.png';
+                        if (guild.icon) {
+                            iconUrl = `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=128`;
+                        }
+                        
+                        // Actualizar sidebar
+                        document.getElementById('sidebarServerIcon').src = iconUrl;
+                        document.getElementById('sidebarServerName').textContent = guild.name;
+                        
+                        // Actualizar header
+                        document.getElementById('serverIcon').src = iconUrl;
+                        document.getElementById('serverName').textContent = guild.name;
+                        document.getElementById('serverStats').textContent = `${guild.memberCount} miembros • Configuración del servidor`;
+                        
+                        // Cargar módulos con configuración real
+                        loadModules(serverId);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('serverHeader').innerHTML = `
+                            <div class="error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Error al cargar la información del servidor</p>
+                            </div>
+                        `;
+                    });
+            }
+            
+            function loadModules(serverId) {
+                // Primero cargamos la configuración real del servidor
+                    fetch(`${CONFIG.API_URL}/api/guilds/${serverId}/config`, { credentials: 'include' })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error cargando configuración');
+                        return response.json();
+                    })
+                    .then(config => {
+                        const modules = [
+                            {
+                                id: 'antialts',
+                                name: 'Anti Alts',
+                                icon: 'fa-user-secret',
+                                desc: 'Bloquea cuentas alternativas y recién creadas',
+                                hasStatus: true,
+                                enabled: config.antialts?.enabled || false
+                            },
+                            {
+                                id: 'antibot',
+                                name: 'Anti Bot',
+                                icon: 'fa-robot',
+                                desc: 'Evita que bots maliciosos se unan al servidor',
+                                hasStatus: true,
+                                enabled: config.antibot?.enabled || false
+                            },
+                            {
+                                id: 'antichannelcreate',
+                                name: 'Anti Crear Canales',
+                                icon: 'fa-layer-group',
+                                desc: 'Protege contra la creación masiva de canales',
+                                hasStatus: true,
+                                enabled: config.antichannelcreate?.enabled || false
+                            },
+                            {
+                                id: 'antichanneldelete',
+                                name: 'Anti Eliminar Canales',
+                                icon: 'fa-trash-alt',
+                                desc: 'Previene la eliminación no autorizada de canales',
+                                hasStatus: true,
+                                enabled: config.antichanneldelete?.enabled || false
+                            },
+                            {
+                                id: 'antiroledelete',
+                                name: 'Anti Eliminar Roles',
+                                icon: 'fa-tag',
+                                desc: 'Protege contra la eliminación masiva de roles',
+                                hasStatus: true,
+                                enabled: config.antiroledelete?.enabled || false
+                            },
+                            {
+                                id: 'antirolecreate',
+                                name: 'Anti Crear Roles',
+                                icon: 'fa-tag',
+                                desc: 'Protege contra la creación masiva de roles',
+                                hasStatus: true,
+                                enabled: config.antirolecreate?.enabled || false
+                            },
+                            {
+                                id: 'antimassban',
+                                name: 'Anti Baneo Masivo',
+                                icon: 'fa-gavel',
+                                desc: 'Detiene baneos masivos no autorizados',
+                                hasStatus: true,
+                                enabled: config.antimassban?.enabled || false
+                            },
+                            {
+                                id: 'antimasskick',
+                                name: 'Anti Kick Masivo',
+                                icon: 'fa-user-slash',
+                                desc: 'Previene expulsiones masivas de miembros',
+                                hasStatus: true,
+                                enabled: config.antimasskick?.enabled || false
+                            },
+                            {
+                                id: 'antilinks',
+                                name: 'Anti Links',
+                                icon: 'fa-link',
+                                desc: 'Bloquea enlaces sospechosos y maliciosos',
+                                hasStatus: true,
+                                enabled: config.antilinks?.enabled || false
+                            },
+                            {
+                                id: 'antiwebhook',
+                                name: 'Anti Webhooks',
+                                icon: 'fa-code-branch',
+                                desc: 'Previene la creación de webhooks maliciosos',
+                                hasStatus: true,
+                                enabled: config.antiwebhook?.enabled || false
+                            },
+                            {
+                                id: 'antiwebhookspam',
+                                name: 'Anti Webhook Spam',
+                                icon: 'fa-bolt',
+                                desc: 'Bloquea spam a través de webhooks',
+                                hasStatus: true,
+                                enabled: config.antiwebhookspam?.enabled || false
+                            },
+                            {
+                                id: 'logs',
+                                name: 'Logs',
+                                icon: 'fa-history',
+                                desc: 'Registra todas las acciones de moderación',
+                                hasStatus: false // Logs no tiene estado activado/desactivado
+                            }
+                        ];
+                        
+                        const modulesGrid = document.getElementById('modulesGrid');
+                        
+                        modulesGrid.innerHTML = modules.map(module => {
+                            // Si el módulo tiene estado (activado/desactivado)
+                            if (module.hasStatus) {
+                                return `
+                                    <div class="module-card" onclick="window.location.href='/modules/${module.id}.html?server=${serverId}'">
+                                        <div class="module-icon">
+                                            <i class="fas ${module.icon}"></i>
+                                        </div>
+                                        <div class="module-name">${module.name}</div>
+                                        <div class="module-desc">${module.desc}</div>
+                                        <div class="module-status">
+                                            <span class="status-badge ${module.enabled ? 'enabled' : 'disabled'}">
+                                                <i class="fas ${module.enabled ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                                ${module.enabled ? 'Activado' : 'Desactivado'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                // Logs no tiene estado, mostramos un badge de configuración
+                                return `
+                                    <div class="module-card" onclick="window.location.href='/modules/${module.id}.html?server=${serverId}'">
+                                        <div class="module-icon">
+                                            <i class="fas ${module.icon}"></i>
+                                        </div>
+                                        <div class="module-name">${module.name}</div>
+                                        <div class="module-desc">${module.desc}</div>
+                                        <div class="module-status">
+                                            <span class="config-badge">
+                                                <i class="fas fa-cog"></i> Configurar
+                                            </span>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }).join('');
+                    })
+                    .catch(error => {
+                        console.error('Error cargando configuración:', error);
+                        document.getElementById('modulesGrid').innerHTML = `
+                            <div class="error">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Error al cargar los módulos</p>
+                            </div>
+                        `;
+                    });
+            }
+            
+            // Eventos
+            document.getElementById('serversBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = '/dashboard';
+            });
+            
+            document.getElementById('auditLogBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = '/audit-log';
+            });
+        })();
+    </script>
+</body>
+</html>
